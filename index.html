@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<script>
+    function toggleZoomScreen() {
+        document.body.style.zoom = "200%";
+    } 
+ </script>
+<html >
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>CS OTP</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/ekmas/cs16.css@main/css/cs16.min.css">
+    <script src="https://unpkg.com/@otplib/preset-browser@^12.0.0/buffer.js"></script>
+    <script src="https://unpkg.com/@otplib/preset-browser@^12.0.0/index.js"></script>
+ 
+</head>
+<body onload="toggleZoomScreen()">
+<div>
+<div class="left">
+    <input class="cs-input" id="inSecret" type="input" />
+    <label class="cs-input__label" for="inSecret" id="lolaso">Secret Key</label>
+</br>
+    
+</br>
+    <button class="cs-btn" id="publish">Get T-OTP</button>
+</div>
+<div class="codes" class="calentura">
+    <input type="text" disabled value="0" class="cs-input" id="1" />
+    <input type="text" disabled value="0" class="cs-input" id="2"/>
+    <input type="text" disabled value="0" class="cs-input" id="3"/>
+    <input type="text" disabled value="-" class="cs-input" />
+    <input type="text" disabled value="0" class="cs-input" id="4"/>
+    <input type="text" disabled value="0" class="cs-input" id="5"/>
+    <input type="text" disabled value="0" class="cs-input" id="6"/>
+</div>
+<div class="calentura">
+<h3>Time remaining: </h3>
+    <div class="cs-progress-bar">
+        <div style="width: 0%" class="bars" id="bar"></div>
+    </div>
+</div>
+</div>
+
+<script>
+
+    const bar = document.getElementById('bar');
+    const digitCount = 6;
+    let intervalId, barInterval;
+    
+    function updateTOTP(secret) {
+    const code = otplib.authenticator.generate(secret);
+    for (let i = 0; i < digitCount; i++) {
+    const input = document.getElementById((i + 1).toString());
+    if (input) input.value = code[i];
+    }
+    }
+    
+    function startProgressBar() {
+    let secondsLeft = 30;
+    const widthPerSecond = 100 / 30; 
+    
+    bar.style.width = '100%'; 
+    
+    if (barInterval) clearInterval(barInterval);
+    barInterval = setInterval(() => {
+    secondsLeft--;
+    bar.style.width = (secondsLeft * widthPerSecond) + '%';
+    if (secondsLeft <= 0) clearInterval(barInterval);
+    }, 1000);
+    }
+    
+    document.getElementById('publish').addEventListener('click', () => {
+    const secret = document.getElementById('inSecret').value.trim();
+    document.getElementById('lolaso').remove()
+    document.getElementById('inSecret').remove()
+    document.getElementById('publish').remove()
+    if (!secret) return alert('Secret is empty!');
+    
+    if (intervalId) clearInterval(intervalId);
+    
+    updateTOTP(secret);
+    startProgressBar();
+    
+    intervalId = setInterval(() => {
+    updateTOTP(secret);
+    startProgressBar();
+    }, 30000);
+    });
+    </script>
+
+</body>
+</html>
